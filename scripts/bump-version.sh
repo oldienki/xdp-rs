@@ -9,8 +9,21 @@ CARGO_TOML="$ROOT/Cargo.toml"
 BUMP="${1:-patch}"
 
 # --- sanity checks -----------------------------------------------------------
-if [[ -n "$(git -C "$ROOT" status --porcelain)" ]]; then
+# Untracked paths that do not make the tree "dirty" (e.g. nested repos, tooling).
+UNTRACKED_EXCEPTIONS=(
+    "agentic/"
+)
+
+untracked_exceptions_re=""
+for path in "${UNTRACKED_EXCEPTIONS[@]}"; do
+    untracked_exceptions_re+="|^?? ${path}"
+done
+untracked_exceptions_re="${untracked_exceptions_re#|}"
+
+dirty="$(git -C "$ROOT" status --porcelain | grep -vE "$untracked_exceptions_re" || true)"
+if [[ -n "$dirty" ]]; then
     echo "error: working tree is dirty, commit or stash changes first" >&2
+    echo "$dirty" >&2
     exit 1
 fi
 
