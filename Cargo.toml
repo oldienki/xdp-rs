@@ -7,9 +7,9 @@ resolver = "2"
 authors = ["Alexey Sudachen (oldienki)"]
 edition = "2024"
 version = "0.1.7"
-homepage = "https://github.com/sudachen/xdp-rs"
+homepage = "https://github.com/odlienki/xdp-rs"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/sudachen/xdp-rs"
+repository = "https://github.com/oldienki/xdp-rs"
 rust-version = "1.85.0"
 readme = "README.md"
 
