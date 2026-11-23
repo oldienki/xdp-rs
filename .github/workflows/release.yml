@@ -1,8 +1,8 @@
 name: Publish to crates.io
 on:
   push:
-    tags: ['v*']  # Triggers when pushing tags starting with 'v'
-  workflow_dispatch: {}  # Allows manual re-run from the Actions tab
+    branches: [master]  # Check version on every push to master
+  workflow_dispatch: {}   # Allows manual re-run from the Actions tab
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,9 +11,26 @@ jobs:
       id-token: write     # Required for OIDC token exchange
     steps:
       - uses: actions/checkout@v6
-      - run: sudo apt-get update && sudo apt-get install -y libelf-dev zlib1g-dev pkg-config
+      - run: sudo apt-get update && sudo apt-get install -y libelf-dev zlib1g-dev pkg-config jq
+      - name: Check version against crates.io
+        id: version
+        run: |
+          local="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)"
+          published="$(curl -fsSL -H 'User-Agent: xdp-rs-release-check' https://crates.io/api/v1/crates/xdp-socket | jq -r '.crate.newest_version')"
+          published="${published:-0.0.0}"
+          echo "local=$local"
+          echo "published=$published"
+          latest="$(printf '%s\n%s\n' "$local" "$published" | sort -V | tail -n1)"
+          if [ "$latest" = "$local" ] && [ "$local" != "$published" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "local version $local is not newer than published $published - skipping"
+          fi
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
-      - run: cargo publish
+        if: steps.version.outputs.publish == 'true'
+      - run: cargo publish --workspace
+        if: steps.version.outputs.publish == 'true'
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
