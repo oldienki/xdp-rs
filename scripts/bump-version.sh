@@ -16,7 +16,7 @@ UNTRACKED_EXCEPTIONS=(
 
 untracked_exceptions_re=""
 for path in "${UNTRACKED_EXCEPTIONS[@]}"; do
-    untracked_exceptions_re+="|^?? ${path}"
+    untracked_exceptions_re+="|^\?\? ${path}"
 done
 untracked_exceptions_re="${untracked_exceptions_re#|}"
 
