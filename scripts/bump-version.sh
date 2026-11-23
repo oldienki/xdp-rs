@@ -52,7 +52,7 @@ if git -C "$ROOT" ls-files --error-unmatch Cargo.lock >/dev/null 2>&1; then
     git -C "$ROOT" add Cargo.lock
 fi
 git -C "$ROOT" commit -m "Bump version to v$new"
-git -C "$ROOT" tag "v$new"
+git -C "$ROOT" tag -a "v$new" -m "Release v$new"
 git -C "$ROOT" push origin master
 git -C "$ROOT" push origin "v$new"
 
