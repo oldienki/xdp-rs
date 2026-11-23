@@ -8,6 +8,7 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 readme = "README.md"
+publish = false
 
 description = "Utility library for XDP sockets"
 
