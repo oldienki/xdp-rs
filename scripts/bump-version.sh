@@ -47,7 +47,10 @@ sed -i "0,/^version = \"$current\"/s//version = \"$new\"/" "$CARGO_TOML"
 cargo -q check --manifest-path "$CARGO_TOML" 2>/dev/null || cargo -q metadata --format-version 1 --manifest-path "$CARGO_TOML" > /dev/null
 
 # --- commit, tag, push ---------------------------------------------------------
-git -C "$ROOT" add Cargo.toml Cargo.lock
+git -C "$ROOT" add Cargo.toml
+if git -C "$ROOT" ls-files --error-unmatch Cargo.lock >/dev/null 2>&1; then
+    git -C "$ROOT" add Cargo.lock
+fi
 git -C "$ROOT" commit -m "Bump version to v$new"
 git -C "$ROOT" tag "v$new"
 git -C "$ROOT" push origin master
