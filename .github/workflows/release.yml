@@ -2,6 +2,7 @@ name: Publish to crates.io
 on:
   push:
     tags: ['v*']  # Triggers when pushing tags starting with 'v'
+  workflow_dispatch: {}  # Allows manual re-run from the Actions tab
 jobs:
   publish:
     runs-on: ubuntu-latest
